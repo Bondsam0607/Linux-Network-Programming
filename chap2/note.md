@@ -38,6 +38,55 @@ Stateless is common: UDP, HTTP
 - Protocol(8bit) : distinguish between upper layer protocols, i.e. 1: ICMP, 6: TCP, 17: UDP
 - Header Checksum(16bit) : check if broken during the transmission
 
-## 2.3 IP fragmenting
+## 2.3 IP Fragmenting
 
+3 parts for fragmenting and rearranging:
+- Identification
+- Flags
+- Offset
+
+Only the first fragment of IP datagram has the header info of upper layer datagram
+
+## 2.4 IP Routing
+
+### 2.4.1 Working Process
+
+Steps after getting an IP datagram:
+1. CRC check
+2. if the datagram is for the host
+3. if not allow routing, drop the datagram
+4. routing by looking up routing table
+
+### 2.4.2 Routing Mechanism
+
+1. IP地址完全匹配，则使用该路由项
+2. 具有相同网路ID的网络IP地址，使用该路由项
+3. 默认路由项
+
+### 2.4.3 Updating Routing table
+
+```
+sudo route add-host 192.168.1.109 dev eth0
+sudo route del-net 192,168.1.0 netmask 255.255.255.0
+sudo route del default
+sudo route add default gw 192,168.0.109 dev eth0
+```
+
+- BGP
+- RIP
+- OSPF
+
+## 2.5 IP Forwarding
+
+1. Check TTL, if 0, drop
+2. if necessary, send ICMP to source server
+3. TTL -= 1
+4. parse IP header
+5. if necessary, do IP fragmenting
+
+## 2.6 Redirection
+
+ICMP redirection segment:
+- source IP address
+- IP address that should be used
 
