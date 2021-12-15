@@ -30,7 +30,7 @@ Stateless is common: UDP, HTTP
 
 - Version(4bit) : 4
 - Header Length(4bit) : how many words(32bit) does the header has, header at most 60 bytes
-- Total Length(16bit) : IP datagram at most $2^16-1$ bytes, usually not as large as $2^16-1$ bytes because of MTU
+- Total Length(16bit) : IP datagram at most <img src="https://render.githubusercontent.com/render/math?math=2^{16}-1"> bytes, usually not as large as <img src="https://render.githubusercontent.com/render/math?math=2^{16}-1"> bytes because of MTU
 - Identification(16bit) : all the fragments of a single datagram will have the same identification number
 - DF(1bit) : Don't fragment, if the datagram is larger than MTU, drop it and return an error message
 - MF(1bit) : set as 1 until the last fragment
