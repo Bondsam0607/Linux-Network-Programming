@@ -92,6 +92,19 @@ ARP request and answer are all from Ethernet Driver Program, which is different 
 
 ## 1.6 DNS
 
+DNS is a distributed Domain Name Service system. 
+
+Lookup type :
+- 1: A, IP address
+- 5: CNAME, alias of target host
+
+`host -t A www.baidu.com #look up IP address of Baidu`
+
+## 1.7 Relationship between socket and TCP/IP protocol family
+
+socket is like the system call, two functions:
+- copy data user space buffer between TCP/IP kernel buffer 
+- modify some header info of different protocols or other data structures
 
 
 
