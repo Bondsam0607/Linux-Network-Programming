@@ -42,6 +42,27 @@
 
 ### 3.2.2 TCP Header Options(at most 40 Bytes)
 
+- Kind(1byte): option kind
+- Length(1byte): the length of the option field(optional)
+- Info(nbyte): (optional)
+
+Kind:
+- 0: end option
+- 1: nop option, 用于将option大小填充到4的整数倍
+- 2: MSS option, MSS(Max Segment Size), used to negotiate the MSS. Usually, MSS = MTU-40, 40 == Header of IP and TCP
+- 3: Window Expand Factor option, used to increase the throughput of TCP communication. Supposed Window Size = N, Expand Factor Size = M, Real Size of the window will be N<<M
+- 4: SACK(Selective Acknowledgement), during re-sending, only re-send lost segments instead of all the segments
+- 8: timestamp, to calculate the RTT
+
+```
+In syncronization segment, win stands for the actual window size.
+In other segments, win stands for remaining window size.
+```
+
+## 3.3 The establishment and close of TCP connection
+
+<img src="./pics/TCP_open_n_close.png">
+
 
 
 
