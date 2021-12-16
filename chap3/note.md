@@ -84,7 +84,45 @@ If reconnection fails, it will tell the application that the connection is timeo
 
 重连间隔时间为1s, 2s, 4s, 8s, 16s, 32s，每次重连时间翻倍。
 
-## 3.4 TCP state transformation
+## 3.4 TCP State Transition
+
+### 3.4.1 State Transition
+
+#### Server side
+
+<img src="./pics/TCP_connection.png">
+
+**Establishment:**
+1. Enter LISTEN state by calling listen syscall
+2. Enter SYN_RCVD state when get SYN segment, and put the connection into kernel waiting sequence
+3. Enter ESTABLISHMED state when received ACK segment
+
+**Close:**
+1. Enter CLOSE_WAIT state when receiving FIN then return ACK segment
+2. Enter LAST_ACK state when sending FIN to the client
+
+#### Client side
+
+**Establishment:**
+1. Enter SYN_SENT state by calling connect syscall to send a SYN segment to the server:
+  1. if the port doesn't exist, the server will return an RST segment
+  2. if the port exist but timeover, connect also fails
+2. Enter ESTABLISHED if the connect is successful
+
+**Close:**
+1. Enter FIN_WAIT_1 after sending a FIN to the server
+2. Enter FIN_WAIT_2 after receiving an ACK from the server
+3. Enter TIME_WAIT when receiving an FIN from the server
+
+Notice:
+1. Client can directly enter TIME_WAIT from FIN_WAIT_1 if the server sends ACK and FIN at the same time
+2. Client may stuck at FIN_WAIT_2 when the client force to exit before getting the FIN from the server. The connection will be transferred to the kernel, called orphan connection:
+  1. /proc/sys/net/ipv4/tcp_max_orphans
+  2. /proc/sys/net/ipv4/tcp_fin_timout
+
+### 3.4.2 TIME_WAIT state
+
+
 
 
 
