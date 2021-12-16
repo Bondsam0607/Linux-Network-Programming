@@ -105,8 +105,8 @@ If reconnection fails, it will tell the application that the connection is timeo
 
 **Establishment:**
 1. Enter SYN_SENT state by calling connect syscall to send a SYN segment to the server:
-  1. if the port doesn't exist, the server will return an RST segment
-  2. if the port exist but timeover, connect also fails
+  - if the port doesn't exist, the server will return an RST segment
+  - if the port exist but timeover, connect also fails
 2. Enter ESTABLISHED if the connect is successful
 
 **Close:**
@@ -117,8 +117,8 @@ If reconnection fails, it will tell the application that the connection is timeo
 Notice:
 1. Client can directly enter TIME_WAIT from FIN_WAIT_1 if the server sends ACK and FIN at the same time
 2. Client may stuck at FIN_WAIT_2 when the client force to exit before getting the FIN from the server. The connection will be transferred to the kernel, called orphan connection:
-  1. /proc/sys/net/ipv4/tcp_max_orphans
-  2. /proc/sys/net/ipv4/tcp_fin_timout
+  - /proc/sys/net/ipv4/tcp_max_orphans
+  - /proc/sys/net/ipv4/tcp_fin_timout
 
 ### 3.4.2 TIME_WAIT state
 
