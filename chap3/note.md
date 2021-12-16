@@ -88,9 +88,9 @@ If reconnection fails, it will tell the application that the connection is timeo
 
 ### 3.4.1 State Transition
 
-#### Server side
-
 <img src="./pics/TCP_connection.png">
+
+#### Server side
 
 **Establishment:**
 1. Enter LISTEN state by calling listen syscall
