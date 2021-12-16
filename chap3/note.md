@@ -120,9 +120,133 @@ Notice:
   - /proc/sys/net/ipv4/tcp_max_orphans
   - /proc/sys/net/ipv4/tcp_fin_timout
 
-### 3.4.2 TIME_WAIT state
+### 3.4.2 TIME_WAIT State
 
+After receiving an FIN from the server, the client will enter TIME_WAIT state and wait for 2MSL(Max Segment Life) until closing.
 
+Reasons for TIME_WAIT:
+1. If the ack the client sends to the server is lost, the server will re-send FIN, so the client should stay in TIME_WAIT to handle this condition.
+2. The port possesed by the TIME_WAIT will not be reused. If there's no TIME_WAIT state, the application can instantly establish a connection similar to the recently closed connection, which will receive data of the former connection.
+3. If the ACK to the server is lost, the client needs 2MSL to receive another FIN from the server.
+
+## 3.5 RST Segment
+
+Tell the other end to close or re-establish the connection.
+
+### 3.5.1 Visiting Non-existing Port
+
+When the client is visiting a non-exisiting port, the server will return an RST segment.
+
+When the port is in TIME_WAIT state, it will also return an RST segment.
+
+### 3.5.2 Exception Terminate Connection
+
+Once an RST is sent, all the data in the sending sequence will be drop.
+
+### 3.5.3 Handling Half Open Connection
+
+Half Open: The client sends an RST to the server, but the RST is lost. The client is closed but the server is still sending data to the client. The client will return RST to the server.
+
+## 3.6 TCP Interactive Data Flow
+
+Interactive data flow only contains small amount of bytes, high demand for real-time, like telnet, ssh.
+
+Block data flow contains longest data size of TCP segment, high transmission efficiency, like ftp.
+
+延迟确认：指服务端在返回ACK时会等待服务器端是否有数据要发送给客户端，可以减少TCP报文端的量
+
+Nagle Algorithm:
+- 通信双方在任意时刻都最多只能发送一个未被确认的TCP报文段
+- 发送方在等待确认的同时收集本端需要发送的微量数据，到来时用一个TCP报文段全部发出
+
+优点:
+- 减少了微小TCP报文段的数量
+- 确认到达的越快，数据发送得越快
+
+## 3.7 TCP Block Data Flow
+
+The sender will send multiple TCP segments, and the receiver will acknowledge all these segments at one time.
+
+The number of TCP segments is decided by receive window size. If win==30084, it means that the client can receive 30084 << winScale bytes 
+
+## 3.8 OOB(Out Of Band) Data
+
+OOB data is to tell the other side the important events, so it has higher priority.
+
+UDP doesn't have OOB data, TCP use URG pointer to represent OOB data.
+
+<img src="./pics/OOB.png">
+
+If TCP module uses multiple TCP segments to send the buffer above, every TCP segment will set URG flag, but only one TCP segment has real OOB data.
+
+OOB cache(1bit), if the upper layer application doesn't read the buffer on time, it will be overwritten by the following OOB data.
+
+## 3.9 TCP timeover retransimission
+
+TCP module sets a timeover timer for each TCP segment. The timer starts when the TCP segment is sent. If the time is over, TCP module will reset the timer and resend the segment.
+
+Re-transmission:
+1. 5 times retransmissions, time gap 0.2s, 0.4s, 0.8s, 1.6s, 3.2s(grow in times, similar to reconnection)
+2. give to IP and ARP
+
+## 3.10 Congestion Control
+
+### 3.10.1 Congestion Control
+
+Congestion Control: Increase Network Use Rate, Decrease Loss Rate
+
+Congestion Control Mechanism:
+- Slow start
+- Congestion avoidance
+- Fast retransmit
+- Fast recovery
+
+Some property:
+- SWND(Send Window), the only data to control, SWND = MIN(RWND, CWND)
+- SMSS(Sender Max Segment Size), usually == MSS
+- RWND(Receive Window)
+- CWND(Congestion Window)
+
+Modify SWND size:
+- If SWND is too large, it will cause network congestion.
+- If SWND is too small, it will cause network delay.
+
+### 3.10.2 Slow start and Congestion avoidance
+
+#### Slow Start
+
+After the TCP connection is established, CWND will be set to IW(Initial Window), 2-4SMSS
+
+```
+CWND += min(N, SMSS) # N is the segment number which got acknowledged in the ACK
+```
+
+#### Congestion avoidance
+
+When CWND is over `ssthresh`, it will enter Congestion avoidance stage, linear increase.
+
+How does the Sender detect the congestion?
+1. Transmission timeover
+2. Get duplicated ACK
+
+If the first situation, 
+```
+ssthresh = max(FlightSize/2, 2*SMSS)
+CWMD <= SMSS
+```
+
+### 3.10.3 Fast re-transmission and Fast recovery
+
+Get duplicated ACKs:
+- TCP segment lost
+- get unordered TCP segments
+
+If the sender gets 3 duplicated ACKs in sequence, there's a congestion.
+
+Procedure:
+1. When getting the third duplicated ACK, `ssthresh = max(FlightSize/2, 2*SMSS); CWND = ssthresh + 3*SMSS`
+2. Everytime the sender gets a duplicated ACK, set `CWND=CWND+SMSS`
+3. When receive new ACK, set `CWND=ssthresh`
 
 
 
