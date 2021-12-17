@@ -34,4 +34,54 @@ If the hostname is not found in the file, it will visit DNS server.
 
 ## 4.6 HTTP Communication
 
+### 4.6.1 HTTP Request
+
+**1. Request Line**
+
+`GET http://www.baidu.com/index.html HTTP/1.0`
+
+Safe Functions:
+GET, HEAD, OPTIONS, TRACE
+
+Idempotent Functions:(Multiple, duplicated requests have the same effect)
+GET, HEAD, OPTIONS, TRACE, PUT, DELETE
+
+**2. Header Line**
+
+`User-Agent:Wget/1.12(linux-gnu)`: Client use wget application
+
+`Host:www.baidu.com`: Target host name
+
+`Connection:close`: close after handling the HTTP request, (keep-alive)
+
+`Content-Length`: Size(optional)
+
+Use <CR><LF> to mark the end of Header ending.
+
+### 4.6.2 HTTP Response
+
+**1. State Line**
+
+`HTTP/1.0 200 OK`:
+
+<img src="./pics/state_code.png">
+
+**2. Header Lines**
+
+`Server:BWS/1.0` Target Web Server software name
+
+`Content-Length:8024`
+
+`Content-Type:text/html;charset=gbk`: text(main document type), html(child document type)
+
+`Set-Cookie:xxx;expires=xxx;path=/;domain=.baidu.com`: path and domain refer to the Cookie's URL and path
+
+**3. Usage of Cookie**
+
+HTTP is stateless. Cookie is used to make HTTP have state.
+
+Everytime the client sends request to the server will take the cookie, then the server can recognize the client.
+
+
+
 

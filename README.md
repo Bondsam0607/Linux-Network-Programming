@@ -6,8 +6,22 @@ This repository is to store the notes and codes of my learning about Linux Netwo
 - [X] Chapter1 TCP/IP protocols
 - [X] Chapter2 IP
 - [X] Chapter3 TCP
-- [ ] Chapter4 TCP/IP : visit webservers on the Internet
+- [X] Chapter4 TCP/IP : visit webservers on the Internet
+
 ## Deep into High Performance Server Programming
+- [ ] Chapter5 Linux Network Programming Fundmental API
+- [ ] Chapter6 High-level I/O Functions
+- [ ] Chapter7 Linux Server Application Norms
+- [ ] Chapter8 High-performance Server Application Framework
+- [ ] Chapter9 I/O Multiplexing
+- [ ] Chapter10 Signal
+- [ ] Chapter11 Timer
+- [ ] Chapter12 High-performance I/O Framework Library Libevent
+- [ ] Chapter13 Multi-process Programming
+- [ ] Chapter14 Multi-thread Programming
+- [ ] Chapter15 Process-pool and Thread-pool
+
+## High-performance Server Optimization and Monitoring
 
 Credit to Linux高性能服务器编程 by 游双
 
