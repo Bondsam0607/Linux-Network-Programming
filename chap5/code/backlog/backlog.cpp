@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <stdbool.h> // for bool
 #include <libgen.h> // for basename
 
 static bool stop = false;
