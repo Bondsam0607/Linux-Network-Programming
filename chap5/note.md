@@ -99,5 +99,61 @@ int inet_aton(const char* cp, struct in_addr* inp); // same as above, save the r
 char * inet_ntoa(struct in_addr in); // 
 ```
 
+The `inet_ntoa` function uses a static variable to store the result, so the inet_ntoa cannot be used twice.
+
+**Another pair of functions**
+```
+#include <arpa/inet.h>
+int inet_pton(int af, const char* src, void* dst); // af: AF_INET, AF_INET6
+const char* inet_ntop(int af, const void* src, char* dst, socklen_t cnt); // return dst memory space
+```
+
+## 5.2 Creating Socket
+
+use socket syscall to create socket
+
+```
+#include <sys/types.h>
+#include <sys/socket.h>
+int socket(int domain, int type, int protocol);
+```
+
+- domain: PF_INET, PF_INET6, PF_UNIX
+- type: SOCK_STREAM(TCP), SOCK_DGRAM(UDP), SOCK_NONBLOCK, SOCK_CLOEXEC
+- protocol: 0 for default
+- return -1 when failure, socket fd when success
+
+## 5.3 Naming Socket
+
+Definition: Bind a socket with socket address
+
+- In server software, we should name the socket.
+- In client software, we use anomynous socket.
+
+```
+#include <sys/types.h>
+#include <sys/socket.h>
+int bind(int sockfd, const struct sockaddr * my_addr, socklen_t addrlen);
+```
+
+bind will give an unnamed sockfd file descriptor to the socket address of `my_addr`, bind will return 0 when success, return -1 and set `errno` when failure
+
+Two common `error`:
+- EACCES: the address is under protection, such as binding port 80, 23...
+- EADDRINUSE: the address is in use, such as binding a socket which is in TIME_WAIT
+
+## 5.4 Listening Socket
+
+Socket cannot accept client connection after naming, it need to use syscall `listen` to create a listening queue to store the connections to be handled.
+
+```
+#include <sys/socket.h>
+int listen(int sockfd, int backlog);
+```
+
+- sockfd: socket to be listened
+- backlog: max length of listening queue, if over backlog, the server will not handle new connections and return ECONNREFUSED, typically 5
+
+Complete connection(ESTABLISHED) number is a bit larger than backlog, other connections will be in state SYN_RCVD.
 
 
