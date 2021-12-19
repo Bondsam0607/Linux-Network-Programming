@@ -115,6 +115,7 @@ use socket syscall to create socket
 ```
 #include <sys/types.h>
 #include <sys/socket.h>
+// return sockfd
 int socket(int domain, int type, int protocol);
 ```
 
@@ -133,6 +134,7 @@ Definition: Bind a socket with socket address
 ```
 #include <sys/types.h>
 #include <sys/socket.h>
+// return 0 when success
 int bind(int sockfd, const struct sockaddr * my_addr, socklen_t addrlen);
 ```
 
@@ -148,6 +150,7 @@ Socket cannot accept client connection after naming, it need to use syscall `lis
 
 ```
 #include <sys/socket.h>
+// return 0 when success
 int listen(int sockfd, int backlog);
 ```
 
@@ -155,5 +158,69 @@ int listen(int sockfd, int backlog);
 - backlog: max length of listening queue, if over backlog, the server will not handle new connections and return ECONNREFUSED, typically 5
 
 Complete connection(ESTABLISHED) number is a bit larger than backlog, other connections will be in state SYN_RCVD.
+
+## 5.5 Accepting Connection
+
+call `accept` syscall to accept a connection from the listening queue.
+
+```
+#include <sys/types.h>
+#include <sys/socket.h>
+// return sockfd
+int accept(int sockfd, struct sockaddr * addr, socklen_t * addrlen);
+```
+
+- 监听socket: have executed `listen` syscall, in LISTEN state
+- 连接socket: in ESTABLISHED state
+
+`accept` function will turn a socket from LISTEN state to ESTABLISHED state
+
+`accpet` only takes out one connection from the listening queue, don't care about the state of the connection
+
+## 5.6 Making Connection
+
+the client call `connect` syscall to make connection with the server
+
+```
+#include <sys/types.h>
+#include <sys/socket.h>
+// return 0 when success
+int connect(int sockfd, const struct sockaddr* serv_addr, socklen_t addrlen);
+```
+
+errno:
+- ECONNREFUSED: target port does not exist
+- ETIMEOUT: time out
+
+## 5.7 Closing Connection
+
+close the connection by closing the file descriptor
+
+```
+#include <unistd.h>
+int close(int fd);
+```
+
+close will not instantly close a connection, it will minus the reference of the fd by 1, only when the reference is 0, the connection is really closed
+
+In multi-process programming, a `fork` will increase the reference of the socket from the parent process by 1, so we need to close in both the child process and the parent process
+
+**Close Immediately:**
+```
+#include <sys/socket.h> // designed for network programming
+int shutdown(int sockfd, int howto);
+```
+
+howto:
+- SHUT_RD: shutdown read part, clear socket receive buffer
+- SHUT_WR: shutdown write part, send out all the data in the send buffer
+- SHUT_RDWR
+
+## 5.8 Read and Write of Data
+
+### 5.8.1 Read and Write of TCP Data
+
+
+
 
 
