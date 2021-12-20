@@ -9,7 +9,7 @@ This repository is to store the notes and codes of my learning about Linux Netwo
 - [X] Chapter4 TCP/IP : visit webservers on the Internet
 
 ## Deep into High Performance Server Programming
-- [ ] Chapter5 Linux Network Programming Fundmental API
+- [X] Chapter5 Linux Network Programming Fundmental API
 - [ ] Chapter6 High-level I/O Functions
 - [ ] Chapter7 Linux Server Application Norms
 - [ ] Chapter8 High-performance Server Application Framework
