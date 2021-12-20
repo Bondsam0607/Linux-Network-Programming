@@ -37,7 +37,6 @@ int main(int argc, char * argv[]) {
   assert(ret != -1);
 
   sleep(20);
-  printf("xxxxxxxxxx\n");
 
   // accept client connection, put the client info into "client"
   struct sockaddr_in client;

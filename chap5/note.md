@@ -220,6 +220,78 @@ howto:
 
 ### 5.8.1 Read and Write of TCP Data
 
+socket provides some special socket data read/write syscall.
+
+```
+#include <sys/types.h>
+#include <sys/socket.h>
+ssize_t recv(int sockfd, void* buf, size_t len, int flags); // return received length, might need to read multiple times
+ssize_t send(int sockfd, const void* buf, size_t len, int flags); // return written length
+```
+
+set the flag as MSG_OOB to send OOB data.
+
+The flag is only effective to the current send and recv.
+
+### 5.8.2 Read and Write of UDO data
+
+```
+#include <sys/types.h>
+#include <sys/socket.h>
+ssize_t recvfrom(int sockfd, void* buf, size_t len, int flags, struct sockaddr* src_addr, socklen_t* addrlen);
+ssize_t sendto(int sockfd, const void* buf, size_t len, int flags, const struct sockaddr* dest_addr, socklen_t addrlen);
+```
+
+**recvfrom**:
+- read data from sockfd to buf
+- because UDP is connectionless, we need to specify the src_addr everytime
+
+**sendto**:
+- write data from buf to sockfd
+- because UDP is connectionless, we need to specify the dest_addr everytime
+
+We can set the last two arguments as NULL to make the UDP connection STREAM
+
+### 5.8.3 General Read and Write Function
+
+Can be used for bothe TCP and UDP
+
+```
+#include <sys/socket.h>
+ssize_t recvmsg(int sockfd, struct msghdr* msg, int flags);
+ssize_t recvmsg(int sockfd, struct msghdr* msg, int flags);
+```
+
+Definition of `msghdr`:
+```
+struct msghdr {
+  void* msg_name; //socket address
+  socklen_t msg_namelen; // length of the socket address
+  
+  struct iovec* msg_iov; // I/O vector
+  int msg_iovlen; // the number of the memory
+  
+  void* msg_control; // support data position
+  socklen_t msg_controllen; // size of support data
+  
+  int msg_flags;
+}
+```
+
+To TCP, `msg_name` is meaningless because it's STREAM, should be set as NULL.
+To UDP, this field should be set.
+
+```
+struct iovec {
+  void* iov_base; // a piece of memory
+  size_t iov_len; // length of the memory
+}
+```
+
+To `recvmsg`
+
+
+  
 
 
 
