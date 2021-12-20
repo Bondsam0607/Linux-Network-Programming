@@ -27,3 +27,5 @@ got 3 bytes of normal data '123'
 got 6 bytes of normal data '123123'
 got 0 bytes of normal data ''
 ```
+
+**Question: How to detect OOB data?**

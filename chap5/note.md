@@ -170,8 +170,8 @@ call `accept` syscall to accept a connection from the listening queue.
 int accept(int sockfd, struct sockaddr * addr, socklen_t * addrlen);
 ```
 
-- 监听socket: have executed `listen` syscall, in LISTEN state
-- 连接socket: in ESTABLISHED state
+- 监听 listening socket: have executed `listen` syscall, in LISTEN state
+- 连接 connected socket: in ESTABLISHED state
 
 `accept` function will turn a socket from LISTEN state to ESTABLISHED state
 
@@ -288,7 +288,173 @@ struct iovec {
 }
 ```
 
-To `recvmsg`
+- To `recvmsg`, the data will be read and stored in the scattered pieces of memory.
+- To `sendmsg`, the data will be gathered and then sent
+
+## 5.9 OOB Mark
+
+In practice, we cannot anticipate when the OOB data will come.
+
+Two common ways the kernel telling the application:
+- I/O Multiplexing will generate exception
+- SIGURG signal
+
+**But the application still needs to know the position of the OOB data**
+
+Use the following syscall:
+```
+#include <sys/socket.h>
+//return 1 if the next data is OOB
+int sockatmark(int sockfd);
+```
+
+## 5.10 Address Info Functions
+
+Functions to know the socket addresses of the two end:
+```
+#include <sys/socket.h>
+int getsockname(int sockfd, struct sockaddr* address, socklen_t* address_len);
+int getpeername(int sockfd, struct sockaddr* address, socklen_t* address_len);
+```
+
+given the `sockfd`, put the sockaddr into `address`
+
+## 5.11 Socket Option
+
+Functions to read and modify the socket file descriptor property:
+```
+#include <sys/socket.h>
+int getsockopt(int sockfd, int level, int option_name, void* option_value, socklen_t* restrict option_len);
+int setsockopt(int sockfd, int level, int option_name, const void* option_value, socklen_t option_len);
+```
+
+<img src="./pics/socket_option.png">
+
+Some socket options can only be set before calling `listen`, because connected socket can only be return by `accept` syscall, so the connections in the listening queue are at least in SYN_RCVD state.
+But some socket options should be set in TCP SYN segment.
+
+Solution: set the socket option for the listening socket, let the connected socket inherit these socket option
+
+### 5.11.1 SO_REUSEADDR Option
+
+Let the address be able to be reused:
+```
+int sock = socket(PF_INET, SOCK_STREAM, 0);
+assert(sock >= 0);
+int reuse = 1;
+setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
+struct sockaddr_in address;
+bzero(&address, sizeof(address));
+address.sin_family = AF_INET;
+inet_pton(AF_INET, ip, &address.sin_addr);
+address.sin_port = htons(port);
+int ret = bind(sock, (struct sockaddr*)&address, sizeof(address));
+```
+
+### 5.11.2 SO_RCVBUF and SO_SNDBUF Option
+
+SO_RCVBUF: TCP receiving buffer size: at least 256bytes
+SO_SNDBUF: TCP sending buffer size: at least 2048bytes
+
+When we use `setsockopt` to set TCP buffer, the system will multiply it and it should not be smaller than a mininum number.
+
+### 5.11.3 SO_RCVLOWAT and SO_SNDLOWAT Option
+
+Mark the lowest threshold of TCP send buffer and receive buffer.
+
+- When readable data amount > threshold, I/O multiplexing syscall will tell the application to read from the socket.
+- When vacant space amount > threshold, I/O multiplexing syscall will tell the application to write into the socket.
+
+By default, 1byte.
+
+### 5.11.4 SO_LINGER Option
+
+Used to control `close` behavior when closing TCP connection
+
+By default, when we call `close`, close will return immediately and TCP module will send the remaining data to the other side.
+
+linger struct:
+```
+#include <sys/socket.h>
+struct linger {
+  int l_onoff; // on(1) or off(0)
+  int l_linger; // linger time
+};
+```
+
+- l_onoff == 0, default
+- l_onoff != 0, l_linger == 0:
+  - close will return immediately
+  - TCP will drop the buffer data
+  - send an RST to the other side
+- l_onoff != 0, l_linger != 0:
+  - if blocking, close will wait for l_linger time,
+  - if non-blocking, close will return immediately
+
+## 5.12 Network Info API
+
+Two elememts of sockaddr:
+- IP address: can be replaced by hostname
+- port number: can be replaced by service name(80: www)
+
+### 5.12.1 gethostbyname and gethostbyaddr
+
+```
+//return type
+#include <netdb.h>
+struct hostent {
+  char* h_name;//hostname
+  char** h_aliases; // host alias
+  int h_addrtype; // address family
+  int h_length; // address length
+  char** h_addr_list; // IP address list in net endian
+};
+```
+
+```
+#include <netdb.h>
+struct hostent* gethostbyname(const char* name);
+// type: AF_INET, AF_INET6
+struct hostend* gethostbyaddr(const void* addr, size_t len, int type);
+```
+
+### 5.12.2 getservbyname and getservbyport
+
+```
+// return type
+#include <netdb.h>
+struct servent {
+  char* s_name; // service name
+  char** s_aliases; 
+  int s_port;
+  char* s_proto; // tcp or udp
+};
+```
+
+```
+#include <netdb.h>
+struct servent* getservbyname(const char* name, const char* proto);
+struct servent* getservbyport(int port, const char* proto);
+```
+
+### 5.12.3 getaddrinfo
+
+```
+#include <netdb.h>
+int getaddrinfo(const char* hostname, const char* service, const struct addrinfo* hint, struct addrinfo** result);
+```
+
+```
+#include <netdb.h>
+const char* gai_strerror(int error); // errno -> text
+```
+
+
+
+
+
+
+
 
 
   
