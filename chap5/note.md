@@ -233,7 +233,7 @@ set the flag as MSG_OOB to send OOB data.
 
 The flag is only effective to the current send and recv.
 
-### 5.8.2 Read and Write of UDO data
+### 5.8.2 Read and Write of UDP data
 
 ```
 #include <sys/types.h>
