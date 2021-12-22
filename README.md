@@ -10,7 +10,7 @@ This repository is to store the notes and codes of my learning about Linux Netwo
 
 ## Deep into High Performance Server Programming
 - [X] Chapter5 Linux Network Programming Fundmental API
-- [ ] Chapter6 High-level I/O Functions
+- [X] Chapter6 High-level I/O Functions
 - [ ] Chapter7 Linux Server Application Norms
 - [ ] Chapter8 High-performance Server Application Framework
 - [ ] Chapter9 I/O Multiplexing

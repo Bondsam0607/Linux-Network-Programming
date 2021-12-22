@@ -66,6 +66,89 @@ ssize_t writev(int fd, cont struct iovec* vector, int count);
 return byte count when success, -1 when failure
 
 
+## 6.4 sendfile Function
+
+Used to copy data directly between two file descriptors, so there'll be no copy between user space and kernel space, zero copy.
+
+```
+#include <sys/sendfile.h>
+ssize_t sendfile(int out_fd, int in_fd, off_t* offset, size_t count);
+```
+
+data flows from `in_fd` to `out_fd`, `offset` is the start point of sending, `count` sending byte count.
+
+`in_fd` must be a real file instead of socket or pipe
+
+## 6.5 mmap Function and munmap Function
+
+- `mmap` is used to alloc a piece of memory space
+- `munmap` is to free the memory space
+
+we can treat the memory space as shared memory between processes or map files into it.
+
+```
+#include <sys/mman.h>
+void* mmap(void* start, size_t length, int prot, int flags, int fd, off_t offset); // prot: protections
+int munmap(void* start, size_t length);
+```
+
+prot:
+- PROT_READ
+- PROT_WRITE
+- PROT_EXEC
+- PROT_NONE: connot be accessed
+
+flags:
+- MAP_SHARED
+- MAP_PRIVATE
+- MAP_ANONYMOUS: not from fd mapping
+- MAP_FIXED: must start from `start`, start must be 4096*N
+- MAP_HUGETLB
+
+## 6.6 splice Function
+
+Used to move data between two file descriptors, zero copy
+
+```
+#include <fcntl.h>
+ssize_t splice(int fd_in, loff_t* off_in, int fd_out, loff_t* off_out, size_t len, unsigned int flags);
+```
+
+data from `fd_in` to `fd_out`, one of `fd_in` and `fd_out` must be pipe
+
+## 6.7 tee Function
+
+`tee` function copy data between two pipe file descriptor, zero copy.
+
+```
+#include <fcntl.h>
+ssize_t tee(int fd_in, int fd_out, size_t len, unsigned int flags);
+```
+
+## 6.8 fcntl Function
+
+fcntl: File Control
+
+```
+#include <fcntl.h>
+int fcntl(int fd, int cmd, ...);
+```
+
+The third argument is optional, arguments of cmd
+
+`fcntl` is usually used to set a fd non-blocking.
+
+```
+int setnonblocking(int fd) {
+  int old_option = fcntl(fd, F_GETFL); // get old fd state mark
+  int new_option = old_option | O_NONBLOCK; // set non-blocking
+  fcntl(fd, F_SETFL, new_option);
+  return old_option; // return old option for later recovery
+}
+```
+
+
+
 
 
 
