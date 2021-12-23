@@ -84,7 +84,7 @@ Only when the event is in progress will non-blocking increase the efficiency.
 
 Non-blocking I/O should be used with other mechenisms like I/O multiplexing or SIGIO signal
 
-<img src="./pics/I\/O_model.png">
+<img src="./pics/IO_models.png">
 
 ### I/O Multiplexing
 
