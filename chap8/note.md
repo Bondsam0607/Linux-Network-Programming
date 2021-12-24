@@ -1,4 +1,4 @@
-# High-performace Server Program Framework
+#High-performace Server Program Framework
 
 A server includes:
 - I/O parsing module
@@ -42,7 +42,7 @@ Jobs:
 - receive client data
 - return server response back to the client
 
-**receivig and sending data is not necessarily in I/O parsing unit, might in Logic Unit**
+**receivig and sending data is not necessarily in I/O parsing unit, might in Logic Unit: Reactor**
 
 ### Logic Unit
 
@@ -110,5 +110,91 @@ Two models:
 - Proactor: asyncronize
 
 ### 8.4.1 Reactor
+
+- Main thread: I/O Parsing Unit
+- Working thread: Logic Unit
+
+Reactor asks I/O parsing unit to only listen on if there's any event happen on the file descriptors, if so, tell the logic unit.
+
+Logic Unit is responsible for read/write data, accepting new connection and parsing user request.
+
+<img src="./pics/Reactor.png">
+
+### 8.4.2 Proactor
+
+Proactor gives all the I/O work to the main thread and the kernel.
+
+1. `epoll_wait` listens only on connection request
+2. Main thread registers read finish event and tell the kernel where the user space buffer is and how to inform the application
+3. When the data is written to the user buffer, the kernel will send a signal to the application
+4. The application will parse the request and use `aio_write` to register a write finish event and tell the kernel where the user write buffer is and how to tell the application when finish
+5. When the data is written to the socket, the kernel will send a singal to the application
+6. the application will parse the signal
+
+### 8.4.3 Simulating Proctor using syncronizing
+
+1. Main thread writes read ready event to the kernel.
+2. Main thread calls `epoll_wait` to wait for socket data
+3. Main thread will read the data into the request queue.
+4. Working thread will handle the request, and register a write ready event
+5. Main thread will call `epoll_wait` to wait for socket writable.
+6. When the socket is writeable, `epoll_wait` will tell the main thread and the main thread will write the result to the socket.
+
+## 8.5 Two high-performace Concurrency Models
+
+Concurrency is efficient when the program is I/O bound.
+
+Concurrency:
+- Multi-process
+- Multi-thread
+
+Two models:
+- half-sync/half-async
+- leader/followers
+
+### 8.5.1 Half-sync/Half-async
+
+The sync/async here is different from those in I/O.
+
+In I/O, sync means:
+1. the kernel will inform the application of `ready` event instead of `finish` event
+2. read/write by the application instead of the kernel
+
+In Concurrency, sync means:
+1. execute by the code sequence instead of the system events like interrupt, signal.
+
+- Sync thread has low efficiency but high realtime feature
+- Async thread has high efficiency but low realtim feature and complex
+
+So we need to use half-sync/half-async:
+- async thread to handle I/O unit, sync thread to handle logic unit
+- When async thread gets client reuqest, put it into request queue
+- request queue tells a sync working thread to handle the event
+
+<img src="./pics/hsha.png">
+
+### 8.5.2 Leader/Followers
+
+At any time, there is only one leader.
+
+When the leader detects the I/O event, it will elect a new leader thread and handle the I/O event.
+Now the old leader handles the event while the new leader is waiting for new I/O events.
+
+Serveral parts:
+- HandleSet
+- ThreadSet
+- EventHandler
+- ConcreteEventHandler
+
+Handle is the I/O resources, file descriptors in linux
+
+ThreadSet includes Leader, Processing, Follower.
+
+<img src="./pics/threadset.png">
+
+## 8.6 FSM
+
+
+
 
 
