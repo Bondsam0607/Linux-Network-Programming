@@ -12,7 +12,7 @@ This repository is to store the notes and codes of my learning about Linux Netwo
 - [X] Chapter5 Linux Network Programming Fundmental API
 - [X] Chapter6 High-level I/O Functions
 - [ ] Chapter7 Linux Server Application Norms
-- [ ] Chapter8 High-performance Server Application Framework
+- [X] Chapter8 High-performance Server Application Framework
 - [ ] Chapter9 I/O Multiplexing
 - [ ] Chapter10 Signal
 - [ ] Chapter11 Timer
