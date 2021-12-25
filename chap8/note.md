@@ -194,7 +194,52 @@ ThreadSet includes Leader, Processing, Follower.
 
 ## 8.6 FSM
 
+CHECK_STATE:
+- CHECK_STATE_REQUESTLINE
+- CHECK_STATE_HEADER
 
+LINE_STATEUE:
+- LINE_OK
+- LINE_BAD
+- LINE_OPEN
 
+HTTP_CODE:
+- NO_REQUEST
+- GET_REQUEST
+- BAD_REQUEST
+- FORBIDDEN_REQUEST
+- INTERNAL_REQUEST
+- CLOSED_CONNCECTION
+
+## 8.7 Other Strategies to Improve Server Performance
+
+### 8.7.1 Pool
+
+Use space resource to trade time efficiency
+
+Pool is a set of resources, is initialized on the start of the server, static resource.
+
+When parsing client request, the server can get resource from the pool instead of calling relevant syscalls, which costs time.
+
+When the parsing is over, we can put the resource back to the pool.
+
+Pool is in the application layer of server, we need to give enough resource to the pool.
+
+**Different kinds of pool**
+- memory pool: socket receive buffer, socket send buffer
+- process pool, thread pool: when parsing client request, get a thread or process from the pool instead of dynamic calling `fork` or `pthread_create`
+- connection pool: permanent connection between servers
+
+### 8.7.2 Data Copy
+
+Avoid unnecessary data copying, especially those between user space and kernel space.
+
+If there does not involve any parsing of the data, like ftp, we can directly use kernel to do the work instead of copying it to the user space.
+
+### 8.7.3 Context Switch and Lock
+
+We must think about context switching when doing concurrency, avoiding context switching.
+
+Lock: If we have to use lock, decrease the granularity of lock.
 
 
