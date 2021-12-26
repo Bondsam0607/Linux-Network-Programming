@@ -13,7 +13,7 @@ This repository is to store the notes and codes of my learning about Linux Netwo
 - [X] Chapter6 High-level I/O Functions
 - [ ] Chapter7 Linux Server Application Norms
 - [X] Chapter8 High-performance Server Application Framework
-- [ ] Chapter9 I/O Multiplexing
+- [X] Chapter9 I/O Multiplexing
 - [ ] Chapter10 Signal
 - [ ] Chapter11 Timer
 - [ ] Chapter12 High-performance I/O Framework Library Libevent
