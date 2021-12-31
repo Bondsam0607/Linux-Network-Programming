@@ -21,7 +21,6 @@ This repository is to store the notes and codes of my learning about Linux Netwo
 - [ ] Chapter14 Multi-thread Programming
 - [ ] Chapter15 Process-pool and Thread-pool
 
-## High-performance Server Optimization and Monitoring
 
 Credit to Linux高性能服务器编程 by 游双
 
