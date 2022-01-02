@@ -14,13 +14,6 @@ This repository is to store the notes and codes of my learning about Linux Netwo
 - [ ] Chapter7 Linux Server Application Norms
 - [X] Chapter8 High-performance Server Application Framework
 - [X] Chapter9 I/O Multiplexing
-- [ ] Chapter10 Signal
-- [ ] Chapter11 Timer
-- [ ] Chapter12 High-performance I/O Framework Library Libevent
-- [ ] Chapter13 Multi-process Programming
-- [ ] Chapter14 Multi-thread Programming
-- [ ] Chapter15 Process-pool and Thread-pool
-
 
 Credit to Linux高性能服务器编程 by 游双
 
